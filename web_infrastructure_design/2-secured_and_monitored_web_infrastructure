@@ -1,0 +1,66 @@
+Design of a Three-Server Secure and Monitored Web Infrastructure for www.foobar.com
+This infrastructure will have three servers, each secured by a firewall, serving traffic over HTTPS with an SSL certificate and monitored by monitoring clients. Here is the breakdown:
+
+Infrastructure Components
+Load Balancer (HAProxy)
+
+Role: The load balancer continues to be the entry point for all incoming traffic. It distributes HTTP/HTTPS requests across multiple servers.
+SSL Certificate: An SSL certificate is installed on the load balancer to terminate SSL, allowing it to handle HTTPS requests. This ensures that all traffic between the user's browser and the load balancer is encrypted.
+Why Add SSL Termination?: Terminating SSL at the load balancer reduces the overhead of encrypting/decrypting traffic on the backend servers and simplifies certificate management.
+Firewalls
+
+3 Firewalls Added:
+Firewall 1: Protects the load balancer from unauthorized access. Only allows incoming traffic on ports 80 (HTTP) and 443 (HTTPS).
+Firewall 2: Protects the web server and application server. Only allows incoming traffic from the load balancer.
+Firewall 3: Protects the database server. Only allows incoming traffic from the application server.
+Role of Firewalls: Firewalls are network security devices or software that monitor and control incoming and outgoing network traffic based on predetermined security rules. They prevent unauthorized access and protect the servers from attacks such as DDoS, brute force, or malicious traffic.
+SSL Certificate
+
+Why Add an SSL Certificate?: To serve the website over HTTPS, which encrypts all data exchanged between the user's browser and the web infrastructure. This protects against man-in-the-middle attacks and ensures data privacy and integrity.
+HTTPS Traffic: All communication between the user's browser and the server is encrypted using HTTPS, ensuring secure transmission of sensitive data.
+Monitoring Clients (Data Collectors)
+
+3 Monitoring Clients Added: One installed on each server (web server, application server, and database server).
+Role of Monitoring Clients: These clients collect performance and health metrics (CPU usage, memory usage, disk I/O, network traffic, etc.) from each server and send the data to a centralized monitoring service (like Sumologic, Prometheus, Datadog, etc.).
+Why Add Monitoring Clients?: To gain visibility into the infrastructure's performance, detect anomalies, and respond to potential issues before they impact users.
+Diagram Overview
+On the whiteboard, draw the following components:
+
+Load Balancer (HAProxy): At the top, secured by Firewall 1, the load balancer distributes traffic across multiple servers.
+Two Servers:
+Web Server (Nginx) on Server 1: Secured by Firewall 2, receives traffic from the load balancer, serves static content, and forwards dynamic requests to the application server.
+Application Server on Server 2: Also secured by Firewall 2, processes dynamic content and interacts with the database.
+Database Server (MySQL):
+A separate server secured by Firewall 3 to handle read/write database operations.
+Monitoring Clients: Each server (Load Balancer, Web Server, Application Server, and Database Server) has a monitoring client installed.
+SSL Certificate: Represented by a lock symbol on the Load Balancer.
+Explanation of Additional Elements
+Firewalls
+
+Why Add Them?: To prevent unauthorized access and protect the servers from various security threats. Each firewall is configured to only allow traffic necessary for the functioning of the infrastructure.
+What Are Firewalls For?: Firewalls filter incoming and outgoing traffic, enforcing rules that block unauthorized access or malicious traffic. They provide a first line of defense against external threats.
+SSL Certificate for HTTPS Traffic
+
+Why Serve Traffic Over HTTPS?: HTTPS encrypts the data between the user's browser and the server, ensuring secure communication and protecting sensitive data like login credentials and personal information. It also helps build user trust and improves SEO rankings.
+Monitoring Clients
+
+What Is Monitoring Used For?: Monitoring helps track the health and performance of the infrastructure, identify potential issues early, and optimize resource usage.
+How the Monitoring Tool Collects Data: Monitoring clients installed on each server collect data such as CPU usage, memory usage, disk space, network activity, and log files. This data is then sent to a centralized monitoring service, where it can be visualized, analyzed, and used to trigger alerts.
+How to Monitor QPS (Queries Per Second) of the Web Server:
+Set up the monitoring tool to collect and track specific metrics such as the number of requests received by the web server per second.
+Configure alerts to notify when QPS exceeds a certain threshold, which could indicate high traffic or potential performance issues.
+Issues with This Infrastructure
+SSL Termination at the Load Balancer
+
+Why Is This an Issue?: Terminating SSL at the load balancer means that traffic between the load balancer and the backend servers (web server, application server, and database server) is unencrypted. If an attacker gains access to the internal network, they could potentially intercept this traffic.
+Solution: Use end-to-end encryption by re-encrypting the traffic from the load balancer to the backend servers. This adds more security but may introduce additional processing overhead.
+Only One MySQL Server Capable of Accepting Writes
+
+Why Is This an Issue?: If the primary (write) database server fails, there will be no way to handle write operations, leading to downtime or data loss. This is a single point of failure (SPOF) in the infrastructure.
+Solution: Implement a high-availability setup with multiple write-capable nodes or use a failover mechanism to promote a replica to primary status if the primary node fails.
+Servers with All the Same Components (Database, Web Server, Application Server)
+
+Why Might This Be a Problem?: If all servers are identical and contain all the same components (database, web server, and application server), it can lead to several issues:
+Resource Contention: Running all components on the same server can lead to resource contention (CPU, RAM, disk I/O), reducing overall performance.
+Lack of Specialization: Each server is not optimized for a specific role, leading to inefficiencies.
+Complexity in Scaling: Scaling out specific components (like the database) independently becomes more difficult.

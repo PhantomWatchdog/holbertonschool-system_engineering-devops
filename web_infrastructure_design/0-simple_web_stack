@@ -1,0 +1,66 @@
+Design of a Single Server Web Infrastructure for www.foobar.com
+Imagine a user wants to access the website located at www.foobar.com. Here is how the infrastructure is set up to handle the request:
+
+Step 1: User's Request
+The user opens a web browser and types in www.foobar.com.
+The browser needs to resolve this domain name into an IP address to locate the server hosting the website. This process is handled by the DNS (Domain Name System).
+Step 2: DNS Resolution
+The domain name foobar.com is configured with an A DNS record for www that points to the IP address 8.8.8.8.
+The DNS server provides the IP address 8.8.8.8 to the user's browser.
+Step 3: Communication Between the User's Computer and the Server
+The browser uses the IP address 8.8.8.8 to send an HTTP (or HTTPS) request to the server.
+This request is routed over the internet using the TCP/IP protocol suite, which is the fundamental protocol for all internet communications.
+Step 4: Server Setup
+Server (Located in a Data Center): The server, with IP address 8.8.8.8, is located in a data center, a secure environment with reliable power, cooling, and network connectivity.
+Web Server (Nginx): Inside the server, there is a web server component, represented by a small box labeled "Web Server (Nginx)." This web server handles incoming HTTP requests and serves static content (like images, CSS, JavaScript), or acts as a reverse proxy to the application server for dynamic content.
+Application Server: Another small box labeled "Application Server" represents the server that runs the backend code to handle dynamic content.
+Code Base (Application Files): A small box labeled "Code Base" or "Application Files" represents the website's files, scripts, and resources used by the application server.
+Database (MySQL): Another small box labeled "Database (MySQL)" represents the database management system used to store all the application's necessary data.
+Step 5: Request Handling
+Web Server (Nginx):
+Nginx receives the request for www.foobar.com.
+For static content (like images or HTML files), Nginx serves it directly to the user's browser.
+For dynamic content (like user login or database queries), Nginx forwards the request to the application server.
+Application Server:
+The application server processes the request (e.g., retrieves data from the MySQL database, performs computations, etc.).
+It returns the processed data to Nginx, which then sends the response back to the user's browser.
+Step 6: Response to User
+The user's browser receives the response and displays the content of www.foobar.com.
+Explanation of Components
+Server:
+
+Server Drawn on the Diagram: The server is the main rectangular box on the diagram.
+Located in a Data Center: The server is physically located in a data center, which provides the necessary infrastructure (power, cooling, network) to keep the server running securely and efficiently.
+Physical or Virtual Server: The server can be a physical machine (hardware server) or a virtual machine (VM) running on shared physical hardware.
+Runs an Operating System (OS): The server runs an OS like Linux (e.g., Ubuntu, CentOS) that manages hardware resources and provides a platform for running web services.
+Web Server (Nginx):
+
+Web Server Drawn on the Diagram: The web server (Nginx) is represented by a small box inside the server.
+Role of the Web Server: The web server's role is to handle incoming HTTP/HTTPS requests, serve static content (like HTML, CSS, images), and forward requests for dynamic content to the application server.
+Application Server:
+
+Application Server Drawn on the Diagram: The application server is represented by another small box inside the server.
+Role of the Application Server: The application server processes dynamic content. It runs the backend logic, handles user requests, and interacts with the database to fetch or store data.
+Code Base (Application Files):
+
+Code Base Drawn on the Diagram: The code base is represented by a small box labeled "Code Base" or "Application Files" inside the server.
+Application Files Drawn on the Diagram: This represents the actual code files that make up the website's logic and frontend.
+Database (MySQL):
+
+Database Drawn on the Diagram: The database is represented by a small box labeled "Database (MySQL)" inside the server.
+Role of the Database: The database stores all application data, such as user information, content, and other structured data. The application server queries the database to retrieve or update data as needed.
+DNS (Domain Name System):
+
+DNS's Role: The DNS translates the domain name www.foobar.com into the server's IP address 8.8.8.8. When a user types the URL, the DNS system translates it into the server's IP address so the user's browser can locate it.
+www.foobar.com is an A Record: The "A" record is a DNS record type that maps a domain name to an IP address. www.foobar.com is an A record pointing to IP 8.8.8.8.
+Communication Over Network:
+
+Server Communicating Over TCP/IP: The server communicates with the user's computer over a network using the TCP/IP protocol suite, specifically HTTP/HTTPS protocols for web traffic.
+Issues with This Infrastructure:
+
+Single Point of Failure (SPOF): Since all components (web server, application server, code base, database) are on a single server, any failure (hardware failure, power outage, etc.) will bring down the entire website.
+Downtime During Maintenance: When deploying new code or restarting services (like Nginx), the server will experience downtime, making the website temporarily unavailable.
+Cannot Scale: A single server has limited resources (CPU, RAM, disk space). If traffic increases beyond the server's capacity, the website may become slow or completely unresponsive.
+Link to Diagram:
+
+Repository Contains a Link to a Diagram: Make sure your repository contains a link to a diagram that clearly shows the infrastructure design.

@@ -1,0 +1,66 @@
+Design of a Four-Server Web Infrastructure for www.foobar.com
+This infrastructure adds a fourth server, configures the load balancer (HAProxy) in a clustered setup for high availability, and separates the web server, application server, and database onto their own dedicated servers.
+
+Infrastructure Components
+Load Balancers (HAProxy)
+
+Two Load Balancers Configured as a Cluster:
+Why Add a Second Load Balancer?: To eliminate the single point of failure (SPOF) at the load balancer level. By having two load balancers in an active-active or active-passive configuration, the infrastructure can continue to function even if one load balancer fails.
+Cluster Configuration: The load balancers are set up in a clustered configuration using a protocol like VRRP (Virtual Router Redundancy Protocol). This protocol provides high availability by sharing a virtual IP address between the load balancers. If the primary load balancer fails, the secondary takes over seamlessly.
+Role of Load Balancers: The load balancers distribute incoming traffic to multiple web servers, ensuring no single server is overwhelmed and that the traffic is balanced across the infrastructure.
+Web Server (Nginx)
+
+Dedicated Server for Web Server:
+Why Split This Component?: By hosting the web server on its own dedicated server, the infrastructure can handle static content (e.g., images, CSS, JavaScript) more efficiently and reduce the load on the application server.
+Role of Web Server: Serves static content to users and forwards dynamic content requests to the application server. It acts as a reverse proxy, caching content to improve performance and reduce the load on backend servers.
+Application Server
+
+Dedicated Server for Application Server:
+Why Split This Component?: Separating the application server onto its own dedicated server allows it to focus on processing dynamic content, executing business logic, and interacting with the database. This isolation improves performance and scalability.
+Role of Application Server: Handles dynamic requests, executes backend logic, and processes data. Communicates with the database server to fetch or store data as required.
+Database Server (MySQL)
+
+Dedicated Server for Database:
+Why Split This Component?: Placing the database on its own server enhances security and performance by isolating it from the other components. This setup allows for better resource allocation (CPU, memory, I/O) tailored specifically for database operations.
+Role of Database Server: Stores, manages, and retrieves application data. The database server is optimized to handle read and write operations efficiently.
+Additional Server Added
+
+Why Add Another Server?: The additional server allows the infrastructure to have dedicated servers for each component, enhancing performance, scalability, and fault isolation.
+Diagram Overview
+On the whiteboard, draw the following components:
+
+Two Load Balancers (HAProxy): At the top, configured in a clustered setup to provide high availability. Represent them as two connected boxes with a shared virtual IP address (VIP).
+Three Servers:
+Web Server (Nginx): A dedicated server that receives traffic from the load balancers to handle static content.
+Application Server: A dedicated server that processes dynamic content and business logic, connected to the web server and the database server.
+Database Server (MySQL): A dedicated server that stores and manages data for the application, connected only to the application server.
+Arrows:
+Show arrows from the load balancers to the web server.
+Draw arrows from the web server to the application server.
+Draw arrows from the application server to the database server.
+Explanation of Additional Elements
+Second Load Balancer (HAProxy)
+
+Why Add It?: To create a highly available load-balancing setup, reducing the risk of downtime due to a single load balancer failure.
+Cluster Configuration: The two load balancers are configured as a cluster using VRRP or a similar protocol, sharing a virtual IP address. This configuration ensures traffic continues to flow even if one load balancer fails.
+Dedicated Servers for Each Component
+
+Web Server (Nginx)
+Why Separate?: Separating the web server allows it to handle static content independently, improving performance by offloading the handling of such content from the application server.
+Application Server
+Why Separate?: Dedicated to processing dynamic content, running application logic, and communicating with the database. This separation allows for better performance tuning and scalability.
+Database Server (MySQL)
+Why Separate?: Dedicated to managing and storing data. Isolation improves security and performance by allowing the database server to operate independently of other server workloads.
+Specific Issues and Considerations
+Why Terminating SSL at the Load Balancer Level Is an Issue
+
+Explanation: Terminating SSL at the load balancer means traffic between the load balancer and backend servers is unencrypted. This could expose sensitive data if the internal network is compromised.
+Consideration: Implement end-to-end encryption by re-encrypting traffic from the load balancer to the backend servers.
+Why Having Only One MySQL Server Capable of Accepting Writes Is an Issue
+
+Explanation: Having a single write-capable MySQL server creates a single point of failure (SPOF). If the server goes down, no write operations can be performed, causing downtime or data inconsistency.
+Consideration: Use database clustering or replication with a failover mechanism to ensure high availability.
+Why Having Servers with All the Same Components Might Be a Problem
+
+Explanation: Combining all components (database, web server, application server) on the same server leads to resource contention and performance bottlenecks. It also makes it difficult to scale individual components independently.
+Consideration: Separate components onto dedicated servers to ensure optimized performance, scalability, and security.

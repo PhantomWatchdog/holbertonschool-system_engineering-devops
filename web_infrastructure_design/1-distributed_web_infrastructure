@@ -1,0 +1,72 @@
+Design of a Three-Server Web Infrastructure for www.foobar.com
+Imagine a web infrastructure with three servers that are designed to host the website www.foobar.com. This infrastructure includes additional components to handle traffic more efficiently and improve fault tolerance and availability.
+
+Infrastructure Components
+Load Balancer (HAProxy)
+
+Role: The load balancer is the entry point for all incoming traffic. It distributes incoming HTTP/HTTPS requests across multiple servers to ensure no single server is overwhelmed.
+Distribution Algorithm:
+The load balancer is configured with a Round Robin algorithm, which means it sends each incoming request to the next server in the list in a circular order. This method ensures that all servers get an equal number of requests, helping to balance the load evenly.
+Active-Active or Active-Passive Setup:
+Active-Active: In this setup, multiple servers (at least two) are actively processing requests. If one server fails, the other servers continue to handle the traffic without interruption.
+Active-Passive: In this setup, one server actively handles requests while another is on standby (passive). If the active server fails, the passive server takes over.
+HAProxy Configuration: The load balancer (HAProxy) is set up in an Active-Active configuration to maximize resource usage and provide high availability. All web servers are active and share the load.
+Web Server (Nginx)
+
+Role: The web server, Nginx, handles incoming traffic from the load balancer, serves static content (like HTML, CSS, and images), and forwards dynamic requests to the application server.
+Why Add a Web Server?:
+Nginx is optimized for serving static content quickly and efficiently. It can cache some dynamic content, reducing the load on the application server and improving response times.
+Application Server
+
+Role: The application server processes the dynamic content (e.g., user authentication, database queries) that cannot be served by the web server. It handles the business logic and interacts with the database to retrieve or update data.
+Why Add an Application Server?:
+Separating the application logic from the web server allows for better scalability, security, and maintenance. The application server can be scaled independently to handle more complex computations or a larger number of dynamic requests.
+Database (MySQL) - Primary-Replica Cluster
+
+Role: The database is configured as a Primary-Replica (Master-Slave) cluster.
+Primary Node: The primary node is the main database that handles all write operations (inserts, updates, deletes). It also receives read requests if necessary.
+Replica Node: The replica node is a copy of the primary node and handles read requests only. It periodically synchronizes with the primary node to stay up-to-date with the latest data.
+How Does a Primary-Replica Cluster Work?:
+The primary node processes all the write operations, while the replica node(s) are used to offload read operations. Changes made on the primary node are replicated to the replica node in near real-time. This configuration improves read performance and provides data redundancy.
+Difference Between Primary and Replica Node:
+The primary node handles both read and write operations. It is the authoritative source of data.
+The replica node is read-only; it can handle read operations but not write operations. It is primarily used for load balancing and redundancy.
+Diagram Overview
+On the whiteboard, draw the following components:
+
+Load Balancer (HAProxy): At the top, the load balancer is represented as a single point where all incoming traffic is directed.
+Two Servers:
+Web Server (Nginx) on Server 1: A box labeled "Web Server (Nginx)" that receives traffic from the load balancer.
+Application Server on Server 2: A box labeled "Application Server" that processes dynamic content and interacts with the database.
+Database (MySQL):
+Draw two boxes:
+One labeled Primary Database (Server 3) handling all write operations.
+One labeled Replica Database that synchronizes with the primary and handles read operations.
+Arrows:
+Show arrows from the load balancer to the web server and the application server.
+Draw arrows from the application server to both the primary and replica databases.
+Issues with This Infrastructure
+Single Points of Failure (SPOF)
+
+Load Balancer: If the load balancer fails, all incoming traffic to the website will be blocked, causing a total outage. This is a critical SPOF.
+Primary Database: If the primary database node fails, write operations cannot be processed, leading to data inconsistencies or downtime for write-heavy applications.
+Security Issues
+
+No Firewall: Without a firewall, the infrastructure is exposed to unauthorized access, denial-of-service attacks, and other malicious activities.
+No HTTPS: Without HTTPS, data transmitted between the user’s browser and the web server is not encrypted, making it vulnerable to interception and man-in-the-middle attacks.
+No Monitoring
+
+Without monitoring tools, it is impossible to track the health of the servers, detect failures, or manage traffic spikes efficiently. This can lead to prolonged downtime during failures and missed opportunities for optimization.
+Explanation of Why Additional Elements Were Added
+Load Balancer (HAProxy)
+
+Why Add It?: To distribute incoming traffic across multiple servers, improving load handling and ensuring high availability.
+Distribution Algorithm: Configured with a Round Robin algorithm to evenly distribute requests among servers.
+Active-Active Setup: Ensures multiple servers are always handling traffic, providing high availability and better resource utilization.
+Additional Web and Application Servers
+
+Why Add Them?: To separate concerns (static content from dynamic processing), improve scalability, and allow independent scaling of web and application logic.
+Primary-Replica (Master-Slave) Database Cluster
+
+Why Add It?: To improve read performance and provide redundancy for database operations.
+How It Works: The primary node handles all write operations, while replica nodes handle read operations, replicating data from the primary to stay synchronized.
